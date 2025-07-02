@@ -1,4 +1,5 @@
-shape.txt
+shapes/*
+!shapes/.gitkeep
 
 .gradle
 build/

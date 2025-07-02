@@ -34,7 +34,6 @@ public class TargetPattern {
             if (wordColorings[i] != CharColor.GREEN) continue;
             char c = solution.charAt(i);
             if (c != guess.charAt(i)) {
-                Thread.dumpStack();
                 return false;
             }
             remainingCorrect.put(c, remainingCorrect.get(c) - 1);

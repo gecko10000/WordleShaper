@@ -24,21 +24,27 @@ public class WordleShaper {
             "XXXXX",
     });
 
-    private String solution;
+    private final String solution;
+    private final File shapeFile;
     private TargetShape targetShape = DEFAULT_TARGET_SHAPE;
 
-    private WordleShaper(String solution) throws Exception {
+    private WordleShaper(String solution, File shapeFile) throws Exception {
         this.solution = solution;
+        this.shapeFile = shapeFile;
         parseTargetShape();
     }
 
     private void parseTargetShape() throws Exception {
-        File shapeFile = new File("shape.txt");
+        if (shapeFile == null) return;
         if (shapeFile.exists()) {
             Stream<String> lineStream = Files.lines(shapeFile.toPath());
             List<String> lines = lineStream.toList();
             lineStream.close();
-            targetShape = TargetShape.fromStrings(lines.toArray(new String[0]));
+            try {
+                targetShape = TargetShape.fromStrings(lines.toArray(new String[0]));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Could not parse shape for file " + shapeFile.getName());
+            }
         }
     }
 
@@ -50,14 +56,17 @@ public class WordleShaper {
                     .filter(w -> pattern.fitsCriteria(solution, w))
                     .filter(w -> !usedWords.contains(w)).findFirst().orElse(null);
             if (guess == null) {
-                System.err.println("Could not find word for pattern " + pattern);
+                System.out.println("No solution found for " + shapeFile.getName() + " (line " + (i + 1) + ")");
+                System.out.println();
                 return;
             }
             usedWords.add(guess);
         }
+        System.out.println("Solution for " + shapeFile.getName() + ":");
         for (String word : usedWords) {
             System.out.println(word);
         }
+        System.out.println();
     }
 
     public static void main(String[] args) throws Exception {
@@ -70,8 +79,17 @@ public class WordleShaper {
             System.err.println("Solution must be " + WORD_LENGTH + " characters.");
             return;
         }
-        WordleShaper shaper = new WordleShaper(solution);
-        shaper.solve();
+        File shapesDir = new File("shapes");
+        File[] children = shapesDir.listFiles(pathname -> pathname.getName().endsWith(".txt"));
+        if (children == null || !shapesDir.isDirectory() || children.length == 0) {
+            new WordleShaper(solution, null).solve();
+            return;
+        }
+
+        for (File shapeFile : children) {
+            WordleShaper shaper = new WordleShaper(solution, shapeFile);
+            shaper.solve();
+        }
     }
 
 }
