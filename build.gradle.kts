@@ -14,7 +14,9 @@ sourceSets {
     }
 }
 
-group = "gecko10000.wordleshaper"
+val artifactName = "WordleShaper"
+val groupName = "gecko10000.wordleshaper"
+group = groupName
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -23,6 +25,12 @@ repositories {
 
 dependencies {}
 
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "$groupName.$artifactName"
+    }
+}
+
 application {
-    mainClass.set("gecko10000.wordleshaper.WordleShaper")
+    mainClass.set("$groupName.$artifactName")
 }
