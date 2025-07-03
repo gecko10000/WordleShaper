@@ -56,13 +56,14 @@ public class WordleShaper {
                     .filter(w -> pattern.fitsCriteria(solution, w))
                     .filter(w -> !usedWords.contains(w)).findFirst().orElse(null);
             if (guess == null) {
-                System.out.println("No solution found for " + shapeFile.getName() + " (line " + (i + 1) + ")");
+                System.out.println("No solution found for " + (shapeFile == null ? "(default shape)" :
+                        shapeFile.getName()) + " (line " + (i + 1) + ")");
                 System.out.println();
                 return;
             }
             usedWords.add(guess);
         }
-        System.out.println("Solution for " + shapeFile.getName() + ":");
+        System.out.println("Solution for " + (shapeFile == null ? "(default shape)" : shapeFile.getName()) + ":");
         for (String word : usedWords) {
             System.out.println(word);
         }
